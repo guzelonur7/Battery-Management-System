@@ -7,7 +7,6 @@
 
 #include "C:\Users\User\Desktop\BMS\Prototips\3\Code\App\inc\midapp.h"
 
-
 // READ CELL VOLTAGES
 void readCellVoltages(float *cellVoltages)
 {}
@@ -117,6 +116,52 @@ float readTemperatureSensors(uint8_t SENSOR)
     return temperature;
 }
 
+void getTemperatures(int8_t *temperatures, uint8_t tempSensorCount)
+{
+    uint8_t i = 0;
+    for (i; i < tempSensorCount; i++)
+        temperatures[i] = (int8_t) readTemperatureSensors(i);
+}
+
+// CHECK ERRORS
+void checkAllErrors(bool *errors)
+{
+    static bool preChargeError = 0;
+    static bool packageHealthError = 0;
+    static bool connectionLostError = 0;
+    static bool instantCurrentError = 0;
+    static bool balancingConditions = 0;
+    static bool packageVoltageMinError = 0;
+    static bool packageVoltageMaxError = 0;
+    static bool packageCapacityErrorMin = 0;
+    static bool packageCapacityErrorMax = 0;
+    static bool auxContacErrors[AUXCONTACCOUNT] = {0};
+    static bool temperatureErrorMin[TEMPSENSORCOUNT] = {0};
+    static bool temperatureErrorMax[TEMPSENSORCOUNT] = {0};
+    static bool cellVoltageErrorsMin[seriesCellCount] = {0};
+    static bool cellVoltageErrorsMax[seriesCellCount] = {0};
+    static uint8_t seriesCellCount = getSeriesCellCount();
+
+    preChargeError = checkPreCharge();
+    packageHealthError = checkPackageHealth();
+    connectionLostError = checkHostConneciton();
+    instantCurrentError = checkInstantCurrent();
+    balancingConditions = checkBalancingConditions();
+    packageVoltageMinError = checkPackageVoltageMin();
+    packageVoltageMaxError = checkPackageVoltageMax();
+    packageCapacityErrorMin = checkPackageCapacityMin();
+    packageCapacityErrorMax = checkPackageCapacityMax();
+    checkAuxContacPositions(auxContacErrors);
+    checkCellVoltagesMin(cellVoltageErrorsMin);
+    checkCellVoltagesMax(cellVoltageErrorsMax);
+    checkTemperaturesMin(temperatureErrorMin);
+    checkTemperaturesMax(temperatureErrorMax);
+
+
+    // tum hatalari birlestir. errorSaveArray = ...
+}
+
+
 // READ AUX CONTAC POSITION
 bool readAuxContacPosition(uint8_t CHANNEL)
 {
@@ -127,7 +172,6 @@ bool readAuxContacPosition(uint8_t CHANNEL)
 
     return  contacPosition;
 }
-
 
 //
 // CHECK SENSOR FUNCTIONS
@@ -207,6 +251,8 @@ void checkAuxContacPositions(uint8_t *errorContacArray)
     }
 }
 
+
+
 ////////////////////////////////////////////app to midapp/////////////////////////////////////////////////////////
 //*******************************************
 //
@@ -276,42 +322,6 @@ uint8_t readOperationModeMessage(void)
     return (result);
 }
 
-//*******************************************
-//
-// checkErrors
-//
-//*******************************************
-void checkErrors(bool *errors)
-{
-    static uint8_t seriesCellCount = getSeriesCellCount();
-    static bool auxContacErrors[AUXCONTACCOUNT] = {0};
-    static bool temperatureErrorMin[TEMPSENSORCOUNT] = {0};
-    static bool temperatureErrorMax[TEMPSENSORCOUNT] = {0};
-    static bool cellVoltageErrorsMin[seriesCellCount] = {0};
-    static bool cellVoltageErrorsMax[seriesCellCount] = {0};
-    static bool packageVoltageMinError = 0;
-    static bool packageVoltageMaxError = 0;
-    static bool instantCurrentError = 0;
-    static bool packageHealthError = 0;
-    static bool packageCapacityErrorMin = 0;
-    static bool packageCapacityErrorMax = 0;
-    static bool connectionLostError = 0;
-
-    connectionLostError = checkHostConneciton();
-    packageVoltageMinError = checkPackageVoltageMin();
-    packageVoltageMaxError = checkPackageVoltageMax();
-    instantCurrentError = checkInstantCurrent();
-    packageHealthError = checkPackageHealth();
-    packageCapacityErrorMin = checkPackageCapacityMin();
-    packageCapacityErrorMax = checkPackageCapacityMax();
-    checkAuxContacPositions(auxContacErrors);
-    checkCellVoltagesMin(cellVoltageErrorsMin);
-    checkCellVoltagesMax(cellVoltageErrorsMax);
-    checkTemperaturesMin(temperatureErrorMin);
-    checkTemperaturesMax(temperatureErrorMax);
-
-    // tum hatalari birlestir. errorSaveArray = ...
-}
 
 /////////////////////////////////////////////////////////eski fonksiyonlar///////////////////////////////
 //*******************************************

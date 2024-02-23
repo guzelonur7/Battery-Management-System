@@ -89,7 +89,7 @@ void sendAllData(void)
     static uint8_t seriesCellCount = getSeriesCellCount();
     static uint8_t cellVoltagesInteger[seriesCellCount] = {0};
     static uint8_t cellVoltagesDecimal[seriesCellCount] = {0};
-    static uint8_t temperaturesExtended[TEMPSENSORCOUNT] = { 0 };
+    static uint8_t temperatures[TEMPSENSORCOUNT] = { 0 };
     static bool errors[TOTALERRORCOUNT] = {0};
 
     static uint8_t currentIntegerLow = 0;
@@ -98,14 +98,14 @@ void sendAllData(void)
 
     getCellVotagesInteger(cellVoltagesInteger);
     getCellVotagesDecimal(cellVoltagesDecimal);
-    currentDecimal = get currentDecimal();
-    currentIntegerLow = getCurrentIntegerLow();
-    currentIntegerHigh = getCurrentIntegerHigh();
-    getTemperaturesExtended(temperaturesExtended);
-    checkErrors(errors);
 
     currentDecimal = getCurrentDecimal();
+    currentIntegerLow = getCurrentIntegerLow();
+    currentIntegerHigh = getCurrentIntegerHigh();
 
+    getTemperatures(temperatures, TEMPSENSORCOUNT);
+
+    checkErrors(errors);
 }
 
 //*******************************************
